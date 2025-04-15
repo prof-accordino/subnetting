@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprendere il Classless Inter-Domain Routing (CIDR)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: white;
+            background-color: #005580;
+            padding: 20px;
+            margin-top: 0;
+            border-radius: 5px 5px 0 0;
+        }
+        h2 {
+            color: #005580;
+            border-bottom: 2px solid #005580;
+            padding-bottom: 10px;
+        }
+        .highlight {
+            background-color: #e6f7ff;
+            padding: 15px;
+            border-left: 4px solid #005580;
+            margin: 20px 0;
+        }
+        .example-box {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            text-align: center;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #005580;
+            color: white;
+        }
+        .bit {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            margin: 2px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        .byte {
+            display: inline-block;
+            border-bottom: 1px dashed #999;
+            margin: 0 2px;
+        }
+        .first-octet {
+            background-color: #00aa55;
+            color: white;
+        }
+        .second-octet {
+            background-color: #88aa00;
+            color: white;
+        }
+        .third-octet {
+            background-color: #aa5500;
+            color: white;
+        }
+        .fourth-octet {
+            background-color: #aa0055;
+            color: white;
+        }
+        .highlighted {
+            border: 2px solid #00aaff;
+        }
+        .comparison {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .comparison-column {
+            flex: 1;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Classless Inter-Domain Routing (CIDR)</h1>
+
+        <p>Il CIDR, introdotto nel 1993, è stato sviluppato per superare le limitazioni del sistema di indirizzamento IP classful precedentemente utilizzato su Internet. Rappresenta un significativo avanzamento nel modo in cui gli indirizzi IP vengono allocati e gestiti.</p>
+
+        <h2>Cos'è il CIDR?</h2>
+        <p>Il Classless Inter-Domain Routing (CIDR) è un metodo per l'allocazione degli indirizzi IP e l'instradamento dei pacchetti IP. A differenza del precedente indirizzamento di rete classful, il CIDR:</p>
+        <ul>
+            <li>Elimina i confini fissi tra le classi di indirizzi</li>
+            <li>Consente una suddivisione più flessibile degli spazi di indirizzi IP</li>
+            <li>Permette un uso più efficiente dello spazio di indirizzi IPv4, sempre più scarso</li>
+            <li>Utilizza una notazione con barra seguita da un numero (es. /24) per indicare quanti bit sono utilizzati per il prefisso di rete</li>
+        </ul>
+
+        <div class="highlight">
+            <p><strong>Concetto chiave:</strong> Il CIDR utilizza una notazione con una barra seguita da un numero (es. /24) per indicare quanti bit sono utilizzati per la parte di rete dell'indirizzo. I bit rimanenti sono utilizzati per l'indirizzamento degli host.</p>
+        </div>
+
+        <h2>CIDR vs. Indirizzamento Classful</h2>
+        
+        <div class="comparison">
+            <div class="comparison-column">
+                <h3>Sistema Classful</h3>
+                <p>Nel sistema classful, gli indirizzi IP erano divisi in cinque classi (A, B, C, D, E), ciascuna con confini fissi:</p>
+                <ul>
+                    <li>Classe A: Il primo bit è 0 (intervalli da 0.0.0.0 a 127.255.255.255)</li>
+                    <li>Classe B: I primi due bit sono 10 (intervalli da 128.0.0.0 a 191.255.255.255)</li>
+                    <li>Classe C: I primi tre bit sono 110 (intervalli da 192.0.0.0 a 223.255.255.255)</li>
+                </ul>
+                <p>Questa struttura rigida ha portato a un uso inefficiente degli indirizzi IP.</p>
+            </div>
+            <div class="comparison-column">
+                <h3>Sistema CIDR</h3>
+                <p>Il CIDR consente di dividere le reti in sottoreti di dimensioni variabili specificando qualsiasi numero di bit per la porzione di rete:</p>
+                <ul>
+                    <li>Allocazione più flessibile dello spazio di indirizzi</li>
+                    <li>Possibilità di creare sottoreti di varie dimensioni in base alle effettive necessità</li>
+                    <li>Consente l'aggregazione delle rotte (supernetting)</li>
+                </ul>
+                <p>Questa flessibilità massimizza l'efficienza di utilizzo degli indirizzi.</p>
+            </div>
+        </div>
+
+        <h2>Esempio Pratico: Comprendere 10.88.135.145</h2>
+
+        <div class="example-box">
+            <p>Esaminiamo l'indirizzo IP <strong>10.88.135.145</strong> e vediamo come viene trattato diversamente nei sistemi classful e CIDR.</p>
+            
+            <h3>Nel Sistema Classful:</h3>
+            <p>L'indirizzo 10.88.135.145 sarebbe identificato come <strong>Classe A</strong> (poiché il primo bit inizia con 0). Questo significa:</p>
+            <ul>
+                <li>Il primo ottetto (10) è la parte di rete</li>
+                <li>I restanti tre ottetti (88.135.145) sono per l'indirizzamento degli host</li>
+                <li>Saremmo limitati a un massimo di 256 reti in questa classe</li>
+                <li>Ogni rete potrebbe avere fino a 16.777.216 host (2²⁴)</li>
+            </ul>
+            <p>Questo è estremamente dispendioso se non hai bisogno di milioni di indirizzi host!</p>
+
+            <h3>Con il CIDR:</h3>
+            <p>Utilizzando il CIDR, possiamo definire il nostro confine rete/host. Ad esempio, con <strong>10.88.135.145/28</strong>:</p>
+            <ul>
+                <li>I primi 28 bit sono utilizzati per la parte di rete</li>
+                <li>I restanti 4 bit (32 - 28) sono per l'indirizzamento degli host</li>
+                <li>Questo ci dà 16 possibili indirizzi host (2⁴) in questa sottorete</li>
+            </ul>
+        </div>
+
+        <h2>Rappresentazione Binaria e Calcolo della Sottorete</h2>
+        
+        <p>Analizziamo il nostro indirizzo IP di esempio in formato binario:</p>
+        
+        <div style="overflow-x: auto;">
+            <table>
+                <tr>
+                    <th colspan="8">Primo Ottetto (10)</th>
+                    <th colspan="8">Secondo Ottetto (88)</th>
+                    <th colspan="8">Terzo Ottetto (135)</th>
+                    <th colspan="8">Quarto Ottetto (145)</th>
+                </tr>
+                <tr>
+                    <td class="first-octet">0</td>
+                    <td class="first-octet">0</td>
+                    <td class="first-octet">0</td>
+                    <td class="first-octet">0</td>
+                    <td class="first-octet">1</td>
+                    <td class="first-octet">0</td>
+                    <td class="first-octet">1</td>
+                    <td class="first-octet">0</td>
+                    
+                    <td class="second-octet">0</td>
+                    <td class="second-octet">1</td>
+                    <td class="second-octet">0</td>
+                    <td class="second-octet">1</td>
+                    <td class="second-octet">1</td>
+                    <td class="second-octet">0</td>
+                    <td class="second-octet">0</td>
+                    <td class="second-octet">0</td>
+                    
+                    <td class="third-octet">1</td>
+                    <td class="third-octet">0</td>
+                    <td class="third-octet">0</td>
+                    <td class="third-octet">0</td>
+                    <td class="third-octet">0</td>
+                    <td class="third-octet">1</td>
+                    <td class="third-octet">1</td>
+                    <td class="third-octet">1</td>
+                    
+                    <td class="fourth-octet">1</td>
+                    <td class="fourth-octet">0</td>
+                    <td class="fourth-octet">0</td>
+                    <td class="fourth-octet highlighted">1</td>
+                    <td class="fourth-octet highlighted">0</td>
+                    <td class="fourth-octet highlighted">0</td>
+                    <td class="fourth-octet highlighted">0</td>
+                    <td class="fourth-octet highlighted">1</td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="first-octet">10</td>
+                    <td colspan="8" class="second-octet">88</td>
+                    <td colspan="8" class="third-octet">135</td>
+                    <td colspan="8" class="fourth-octet">145</td>
+                </tr>
+                <tr>
+                    <td colspan="28">Per una rete /28, i primi 28 bit (non evidenziati) rappresentano la rete, gli ultimi 4 bit (evidenziati) rappresentano l'host</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>Calcoli CIDR Chiave per 10.88.135.145/28</h2>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <tr>
+                    <th>Componente</th>
+                    <th>Primo Ottetto</th>
+                    <th>Secondo Ottetto</th>
+                    <th>Terzo Ottetto</th>
+                    <th>Quarto Ottetto</th>
+                    <th>Descrizione</th>
+                </tr>
+                <tr>
+                    <td><strong>Indirizzo IP</strong></td>
+                    <td class="first-octet">00001010</td>
+                    <td class="second-octet">01011000</td>
+                    <td class="third-octet">10000111</td>
+                    <td class="fourth-octet">10010001</td>
+                    <td>10.88.135.145</td>
+                </tr>
+                <tr>
+                    <td><strong>Subnet Mask</strong></td>
+                    <td class="first-octet">11111111</td>
+                    <td class="second-octet">11111111</td>
+                    <td class="third-octet">11111111</td>
+                    <td class="fourth-octet">11110000</td>
+                    <td>255.255.255.240</td>
+                </tr>
+                <tr>
+                    <td><strong>Indirizzo di Rete</strong></td>
+                    <td class="first-octet">00001010</td>
+                    <td class="second-octet">01011000</td>
+                    <td class="third-octet">10000111</td>
+                    <td class="fourth-octet">10010000</td>
+                    <td>10.88.135.144</td>
+                </tr>
+                <tr>
+                    <td><strong>Primo IP Utilizzabile</strong></td>
+                    <td class="first-octet">00001010</td>
+                    <td class="second-octet">01011000</td>
+                    <td class="third-octet">10000111</td>
+                    <td class="fourth-octet">10010001</td>
+                    <td>10.88.135.145</td>
+                </tr>
+                <tr>
+                    <td><strong>Ultimo IP Utilizzabile</strong></td>
+                    <td class="first-octet">00001010</td>
+                    <td class="second-octet">01011000</td>
+                    <td class="third-octet">10000111</td>
+                    <td class="fourth-octet">10011110</td>
+                    <td>10.88.135.158</td>
+                </tr>
+                <tr>
+                    <td><strong>Indirizzo di Broadcast</strong></td>
+                    <td class="first-octet">00001010</td>
+                    <td class="second-octet">01011000</td>
+                    <td class="third-octet">10000111</td>
+                    <td class="fourth-octet">10011111</td>
+                    <td>10.88.135.159</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>Vantaggi del CIDR</h2>
+        <ul>
+            <li><strong>Allocazione degli Indirizzi più Efficiente:</strong> Le reti possono essere dimensionate in base alle effettive necessità</li>
+            <li><strong>Aggregazione delle Rotte:</strong> Più reti possono essere pubblicizzate come una singola rotta, riducendo la dimensione della tabella di routing</li>
+            <li><strong>Design di Rete Gerarchico:</strong> Facilita una migliore organizzazione della rete</li>
+            <li><strong>Mitigazione dell'Esaurimento degli Indirizzi IPv4:</strong> Ha contribuito a prolungare la vita utile dell'indirizzamento IPv4</li>
+        </ul>
+
+        <h2>Dimensioni Comuni dei Blocchi CIDR</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <tr>
+                    <th>Notazione CIDR</th>
+                    <th>Subnet Mask</th>
+                    <th>Host Disponibili</th>
+                    <th>Uso Comune</th>
+                </tr>
+                <tr>
+                    <td>/32</td>
+                    <td>255.255.255.255</td>
+                    <td>1</td>
+                    <td>Host singolo</td>
+                </tr>
+                <tr>
+                    <td>/31</td>
+                    <td>255.255.255.254</td>
+                    <td>2</td>
+                    <td>Collegamenti punto-punto</td>
+                </tr>
+                <tr>
+                    <td>/30</td>
+                    <td>255.255.255.252</td>
+                    <td>2</td>
+                    <td>Collegamenti punto-punto</td>
+                </tr>
+                <tr>
+                    <td>/29</td>
+                    <td>255.255.255.248</td>
+                    <td>6</td>
+                    <td>Piccole sottoreti</td>
+                </tr>
+                <tr>
+                    <td>/28</td>
+                    <td>255.255.255.240</td>
+                    <td>14</td>
+                    <td>Piccolo ufficio</td>
+                </tr>
+                <tr>
+                    <td>/24</td>
+                    <td>255.255.255.0</td>
+                    <td>254</td>
+                    <td>Tradizionale rete di Classe C</td>
+                </tr>
+                <tr>
+                    <td>/16</td>
+                    <td>255.255.0.0</td>
+                    <td>65.534</td>
+                    <td>Tradizionale rete di Classe B</td>
+                </tr>
+                <tr>
+                    <td>/8</td>
+                    <td>255.0.0.0</td>
+                    <td>16.777.214</td>
+                    <td>Tradizionale rete di Classe A</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="highlight">
+            <p><strong>Perché il nostro esempio 10.88.135.144/28 è più efficiente?</strong></p>
+            <p>Nel sistema classful, 10.88.135.145 richiederebbe un'intera rete di Classe A con milioni di possibili host. Con CIDR /28, allochiamo precisamente solo 16 indirizzi IP (14 utilizzabili), che è molto più appropriato per un piccolo segmento di rete.</p>
+        </div>
+        
+        <h2>Conclusione</h2>
+        <p>Il CIDR ha rivoluzionato l'indirizzamento IP introducendo flessibilità dove il sistema classful era rigido. Permettendo agli amministratori di rete di definire confini di sottorete personalizzati, il CIDR consente un uso più efficiente del limitato spazio di indirizzi IPv4 e un design di rete più gestibile.</p>
+    </div>
+</body>
+</html>
