@@ -242,7 +242,8 @@
                     <td colspan="8" class="fourth-octet"> <b class="fourth-octet-network">144</b> + <b class="fourth-octet-hosts">1</b> = <b>145</b></td>
                 </tr>
                 <tr>
-                    <td colspan="28">Per una rete /28, i primi 28 bit (non evidenziati) rappresentano la rete, gli ultimi 4 bit (evidenziati) rappresentano l'host</td>
+                    <td colspan="32">Per una rete /28, i primi 28 bit (colorati in base all'ottetto di appartenenza) rappresentano la rete, gli ultimi 4 bit (colorati in grigio e cerchiati di blu) rappresentano l'host. <br><br>
+					<b><u> Si noti che in questo caso la separazione non è fatta in base agli ottetti ma ai bit, quindi l'ulitmo ottetto è per metà indirizzo di rete e metà indirizzo di host</b></u></td>
                 </tr>
             </table>
         </div>
@@ -257,7 +258,7 @@
                     <th>Secondo Ottetto</th>
                     <th>Terzo Ottetto</th>
                     <th>Quarto Ottetto</th>
-                    <th>Descrizione</th>
+                    <th>Traduzione <br> binario → decimale</th>
                 </tr>
                 <tr>
                     <td><strong>Indirizzo IP</strong></td>
@@ -265,15 +266,14 @@
                     <td class="second-octet">01011000</td>
                     <td class="third-octet">10000111</td>
                     <td class="fourth-octet">10010001</td>
-                    <td>10.88.135.145</td>
-                </tr>
+                    <td style="background-color: #CCCCCC"> <b class="first-octet">10</b>.<b class="second-octet">88</b>.<b class="third-octet">135</b>.<b class="fourth-octet">145</b> </tr>
                 <tr>
                     <td><strong>Subnet Mask</strong></td>
                     <td class="first-octet">11111111</td>
                     <td class="second-octet">11111111</td>
                     <td class="third-octet">11111111</td>
                     <td class="fourth-octet">11110000</td>
-                    <td>255.255.255.240</td>
+					<td style="background-color: #CCCCCC"> <b class="first-octet">255</b>.<b class="second-octet">255</b>.<b class="third-octet">255</b>.<b class="fourth-octet">240</b> </td>
                 </tr>
                 <tr>
                     <td><strong>Indirizzo di Rete</strong></td>
@@ -281,7 +281,7 @@
                     <td class="second-octet">01011000</td>
                     <td class="third-octet">10000111</td>
                     <td class="fourth-octet">10010000</td>
-                    <td>10.88.135.144</td>
+                    <td style="background-color: #CCCCCC"> <b class="first-octet">10</b>.<b class="second-octet">88</b>.<b class="third-octet">135</b>.<b class="fourth-octet">144</b> </tr>
                 </tr>
                 <tr>
                     <td><strong>Primo IP Utilizzabile</strong></td>
@@ -289,7 +289,7 @@
                     <td class="second-octet">01011000</td>
                     <td class="third-octet">10000111</td>
                     <td class="fourth-octet">10010001</td>
-                    <td>10.88.135.145</td>
+                    <td style="background-color: #CCCCCC"> <b class="first-octet">10</b>.<b class="second-octet">88</b>.<b class="third-octet">135</b>.<b class="fourth-octet">145</b> </tr>
                 </tr>
                 <tr>
                     <td><strong>Ultimo IP Utilizzabile</strong></td>
@@ -297,7 +297,7 @@
                     <td class="second-octet">01011000</td>
                     <td class="third-octet">10000111</td>
                     <td class="fourth-octet">10011110</td>
-                    <td>10.88.135.158</td>
+                    <td style="background-color: #CCCCCC"> <b class="first-octet">10</b>.<b class="second-octet">88</b>.<b class="third-octet">135</b>.<b class="fourth-octet">158</b> </tr>
                 </tr>
                 <tr>
                     <td><strong>Indirizzo di Broadcast</strong></td>
@@ -305,7 +305,7 @@
                     <td class="second-octet">01011000</td>
                     <td class="third-octet">10000111</td>
                     <td class="fourth-octet">10011111</td>
-                    <td>10.88.135.159</td>
+                    <td style="background-color: #CCCCCC"> <b class="first-octet">10</b>.<b class="second-octet">88</b>.<b class="third-octet">135</b>.<b class="fourth-octet">159</b> </tr>
                 </tr>
             </table>
         </div>
