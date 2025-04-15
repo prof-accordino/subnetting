@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Subnetting - Sistema di Classi IP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            background-color: #0066a1;
+            padding: 20px;
+            margin-top: 0;
+            font-size: 32px;
+        }
+        h2 {
+            color: #0066a1;
+            border-bottom: 2px solid #0066a1;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #0066a1;
+        }
+        .intro {
+            background-color: #0066a1;
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #0066a1;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #0066a1;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #e6f3ff;
+        }
+        .bit-table td {
+            font-family: monospace;
+            font-size: 18px;
+            padding: 15px;
+        }
+        .network {
+            background-color: #ff9999;
+            padding: 2px 5px;
+        }
+        .host {
+            background-color: #99ff99;
+            padding: 2px 5px;
+        }
+        .binary {
+            font-weight: bold;
+        }
+        .example {
+            background-color: #0066a1;
+            color: white;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .calculation {
+            background-color: #e6f3ff;
+            border-left: 5px solid #0066a1;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .formula {
+            font-weight: bold;
+            color: #0066a1;
+        }
+        .note {
+            background-color: #fffde7;
+            border-left: 5px solid #ffd600;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .comparison {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .comparison-item {
+            flex: 1;
+            min-width: 300px;
+            background-color: #e6f3ff;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .highlight {
+            color: #d81b60;
+            font-weight: bold;
+        }
+        .bit-cell {
+            border: 1px solid #0066a1;
+            padding: 10px;
+            text-align: center;
+            width: 30px;
+        }
+        .network-bit {
+            background-color: #ff9999;
+        }
+        .host-bit {
+            background-color: #99ff99;
+        }
+        .explanation-box {
+            background-color: #e1f5fe;
+            border-left: 5px solid #03a9f4;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .practical-example {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .class-tab {
+            background-color: #0066a1;
+            color: white;
+            display: inline-block;
+            padding: 10px 20px;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+        }
+        .toc {
+            background-color: #e6f3ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .toc ul {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Subnetting - Il Vecchio Sistema Classful</h1>
+        
+        <div class="intro">
+            <p>Le classi di indirizzi IP (A, B, C, D, E) erano utilizzate per categorizzare gli indirizzi IPv4 in un sistema noto come <strong>"Classful"</strong>. Sebbene oggi il sistema CIDR (Classless Inter-Domain Routing) abbia sostituito questo approccio, comprendere il sistema classful rimane fondamentale per lo studio delle reti moderne e per capire l'evoluzione dell'architettura di Internet.</p>
+        </div>
+        
+        <div class="toc">
+            <h3>Indice dei Contenuti</h3>
+            <ul>
+                <li><a href="#overview">Panoramica del Sistema Classful</a></li>
+                <li><a href="#classA">Classe A - Approfondimento</a></li>
+                <li><a href="#classB">Classe B - Approfondimento</a></li>
+                <li><a href="#classC">Classe C - Approfondimento</a></li>
+                <li><a href="#classDE">Classi D ed E - Usi Speciali</a></li>
+                <li><a href="#limitations">Limiti del Sistema Classful</a></li>
+                <li><a href="#cidr">Dal Classful al CIDR</a></li>
+                <li><a href="#practical">Esempi Pratici e Casi d'Uso</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="overview">Cos'è il Sistema di Classi IP?</h2>
+        <p>Il sistema classful divideva l'intero spazio di indirizzi IPv4 in cinque classi principali (A-E), ognuna con caratteristiche specifiche riguardo alla suddivisione tra parte di rete e parte di host. Questa divisione era determinata dai primi bit dell'indirizzo IP.</p>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Classe</th>
+                        <th>Bit iniziali</th>
+                        <th>Range di indirizzi</th>
+                        <th>Subnet mask</th>
+                        <th>N. Reti</th>
+                        <th>N. Host per rete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td>0</td>
+                        <td>0.0.0.0 - 127.255.255.255</td>
+                        <td>255.0.0.0 (/8)</td>
+                        <td>126</td>
+                        <td>16.777.214</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td>10</td>
+                        <td>128.0.0.0 - 191.255.255.255</td>
+                        <td>255.255.0.0 (/16)</td>
+                        <td>16.384</td>
+                        <td>65.534</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td>110</td>
+                        <td>192.0.0.0 - 223.255.255.255</td>
+                        <td>255.255.255.0 (/24)</td>
+                        <td>2.097.152</td>
+                        <td>254</td>
+                    </tr>
+                    <tr>
+                        <td>D (Multicast)</td>
+                        <td>1110</td>
+                        <td>224.0.0.0 - 239.255.255.255</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>E (Riservata)</td>
+                        <td>1111</td>
+                        <td>240.0.0.0 - 255.255.255.255</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h2>Come Identificare la Classe di un Indirizzo IP</h2>
+        <p>La classe di un indirizzo IP è determinata dai primi bit del primo ottetto:</p>
+        <ul>
+            <li><strong>Classe A</strong>: Il primo bit è 0 (range primo ottetto: 0-127)</li>
+            <li><strong>Classe B</strong>: I primi due bit sono 10 (range primo ottetto: 128-191)</li>
+            <li><strong>Classe C</strong>: I primi tre bit sono 110 (range primo ottetto: 192-223)</li>
+            <li><strong>Classe D</strong>: I primi quattro bit sono 1110 (range primo ottetto: 224-239)</li>
+            <li><strong>Classe E</strong>: I primi quattro bit sono 1111 (range primo ottetto: 240-255)</li>
+        </ul>
+        
+        <div class="note">
+            <p><strong>Nota importante:</strong> Per determinare il range del primo ottetto di ciascuna classe, dobbiamo considerare i valori decimali che corrispondono ai pattern binari dei bit iniziali:</p>
+            <ul>
+                <li>Classe A: Inizia con 0 → Binary range: 0xxxxxxx → Decimal range: 0-127</li>
+                <li>Classe B: Inizia con 10 → Binary range: 10xxxxxx → Decimal range: 128-191</li>
+                <li>Classe C: Inizia con 110 → Binary range: 110xxxxx → Decimal range: 192-223</li>
+                <li>Classe D: Inizia con 1110 → Binary range: 1110xxxx → Decimal range: 224-239</li>
+                <li>Classe E: Inizia con 1111 → Binary range: 1111xxxx → Decimal range: 240-255</li>
+            </ul>
+        </div>
+        
+        <h2 id="classA">Approfondimento sulla Classe A</h2>
+        <div class="class-tab">Classe A</div>
+        
+        <p>Gli indirizzi IP di Classe A erano progettati per le organizzazioni di dimensioni molto grandi che necessitavano di un enorme numero di indirizzi IP.</p>
+        
+        <h3>Struttura di un Indirizzo di Classe A</h3>
+        <p>Un indirizzo IP di classe A ha:</p>
+        <ul>
+            <li>Il primo bit fisso come "0"</li>
+            <li>I successivi 7 bit del primo ottetto dedicati all'identificazione della rete</li>
+            <li>Gli ultimi 24 bit (gli ultimi tre ottetti) dedicati all'identificazione degli host</li>
+        </ul>
+        
+        <div class="table-container">
+            <table class="bit-table">
+                <tr>
+                    <td colspan="8" class="network">Primo Ottetto (Rete)</td>
+                    <td colspan="8" class="host">Secondo Ottetto (Host)</td>
+                    <td colspan="8" class="host">Terzo Ottetto (Host)</td>
+                    <td colspan="8" class="host">Quarto Ottetto (Host)</td>
+                </tr>
+                <tr>
+                    <td class="network">0</td>
+                    <td colspan="7" class="network">xxxxxxx</td>
+                    <td colspan="8" class="host">xxxxxxxx</td>
+                    <td colspan="8" class="host">xxxxxxxx</td>
+                    <td colspan="8" class="host">xxxxxxxx</td>
+                </tr>
+                <tr>
+                    <td colspan="8">255</td>
+                    <td colspan="8">0</td>
+                    <td colspan="8">0</td>
+                    <td colspan="8">0</td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="binary">11111111</td>
+                    <td colspan="8" class="binary">00000000</td>
+                    <td colspan="8" class="binary">00000000</td>
+                    <td colspan="8" class="binary">00000000</td>
+                </tr>
+                <tr>
+                    <td colspan="8">Parte di Rete</td>
+                    <td colspan="24">Parte di Host</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="calculation">
+            <h3>Calcolo del Numero di Reti Disponibili nella Classe A:</h3>
+            <p>Per la classe A, abbiamo 7 bit disponibili per identificare le reti (dopo il primo bit fisso "0"):</p>
+            <div class="formula">
+                2<sup>7</sup> = 128 reti teoriche
+            </div>
+            <p>Tuttavia, nel sistema classful, dobbiamo sottrarre 2 reti che sono riservate:</p>
+            <ul>
+                <li>La rete 0.0.0.0 (tutti 0 nella parte di rete) era riservata</li>
+                <li>La rete 127.0.0.0 era riservata per il loopback</li>
+            </ul>
+            <div class="formula">
+                128 - 2 = 126 reti effettivamente utilizzabili
+            </div>
+            
+            <h3>Calcolo del Numero di Host per Rete nella Classe A:</h3>
+            <p>Abbiamo 24 bit per gli host (gli ultimi tre ottetti):</p>
+            <div class="formula">
+                2<sup>24</sup> = 16.777.216 host teorici
+            </div>
+            <p>Dobbiamo sottrarre 2 indirizzi riservati in ogni rete:</p>
+            <div class="formula">
+                16.777.216 - 2 = 16.777.214 host utilizzabili per rete
+            </div>
+        </div>
+        
+        <div class="practical-example">
+            <h3>Esempio Pratico - Classe A</h3>
+            <p>Prendiamo l'indirizzo IP <strong>10.5.20.100</strong></p>
+            <p><strong>Identificazione della classe:</strong> Il primo ottetto è 10, che è tra 0 e 127, quindi è un indirizzo di Classe A</p>
+            <p><strong>Subnet mask:</strong> 255.0.0.0 (o /8 in notazione CIDR)</p>
+            <p><strong>Indirizzo di rete:</strong> 10.0.0.0</p>
+            <p><strong>Indirizzo di broadcast:</strong> 10.255.255.255</p>
+            <p><strong>Range di indirizzi utilizzabili:</strong> Da 10.0.0.1 a 10.255.255.254</p>
+        </div>
+        
+        <h2 id="classB">Approfondimento sulla Classe B</h2>
+        <div class="class-tab">Classe B</div>
+        
+        <p>Gli indirizzi IP di Classe B erano destinati a organizzazioni di medie dimensioni che necessitavano di un numero significativo, ma non enorme, di indirizzi IP.</p>
+        
+        <h3>Struttura di un Indirizzo di Classe B</h3>
+        <p>Un indirizzo IP di classe B ha:</p>
+        <ul>
+            <li>I primi 2 bit fissi come "10"</li>
+            <li>I successivi 14 bit (per completare i primi due ottetti) dedicati all'identificazione della rete</li>
+            <li>Gli ultimi 16 bit (gli ultimi due ottetti) dedicati all'identificazione degli host</li>
+        </ul>
+        
+        <div class="table-container">
+            <table class="bit-table">
+                <tr>
+                    <td colspan="8" class="network">Primo Ottetto (Rete)</td>
+                    <td colspan="8" class="network">Secondo Ottetto (Rete)</td>
+                    <td colspan="8" class="host">Terzo Ottetto (Host)</td>
+                    <td colspan="8" class="host">Quarto Ottetto (Host)</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="network">10</td>
+                    <td colspan="6" class="network">xxxxxx</td>
+                    <td colspan="8" class="network">xxxxxxxx</td>
+                    <td colspan="8" class="host">xxxxxxxx</td>
+                    <td colspan="8" class="host">xxxxxxxx</td>
+                </tr>
+                <tr>
+                    <td colspan="8">255</td>
+                    <td colspan="8">255</td>
+                    <td colspan="8">0</td>
+                    <td colspan="8">0</td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="binary">11111111</td>
+                    <td colspan="8" class="binary">11111111</td>
+                    <td colspan="8" class="binary">00000000</td>
+                    <td colspan="8" class="binary">00000000</td>
+                </tr>
+                <tr>
+                    <td colspan="16">Parte di Rete</td>
+                    <td colspan="16">Parte di Host</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="calculation">
+            <h3>Calcolo del Numero di Reti Disponibili nella Classe B:</h3>
+            <p>Per la classe B, abbiamo 14 bit disponibili per identificare le reti (dopo i primi 2 bit fissi "10"):</p>
+            <div class="formula">
+                2<sup>14</sup> = 16.384 reti teoriche
+            </div>
+            <p>Nel sistema classful, in teoria si potrebbero sottrarre reti riservate, ma nella pratica standard:</p>
+            <div class="formula">
+                16.384 reti effettivamente utilizzabili
+            </div>
+            
+            <h3>Calcolo del Numero di Host per Rete nella Classe B:</h3>
+            <p>Abbiamo 16 bit per gli host (gli ultimi due ottetti):</p>
+            <div class="formula">
+                2<sup>16</sup> = 65.536 host teorici
+            </div>
+            <p>Dobbiamo sottrarre 2 indirizzi riservati in ogni rete:</p>
+            <div class="formula">
+                65.536 - 2 = 65.534 host utilizzabili per rete
+            </div>
+        </div>
+        
+        <div class="practical-example">
+            <h3>Esempio Pratico - Classe B</h3>
+            <p>Prendiamo l'indirizzo IP <strong>172.16.30.5</strong></p>
+            <p><strong>Identificazione della classe:</strong> Il primo ottetto è 172, che è tra 128 e 191, quindi è un indirizzo di Classe B</p>
+            <p><strong>Subnet mask:</strong> 255.255.0.0 (o /16 in notazione CIDR)</p>
+            <p><strong>Indirizzo di rete:</strong> 172.16.0.0</p>
+            <p><strong>Indirizzo di broadcast:</strong> 172.16.255.255</p>
+            <p><strong>Range di indirizzi utilizzabili:</strong> Da 172.16.0.1 a 172.16.255.254</p>
+        </div>
+        
+        <h2 id="classC">Approfondimento sulla Classe C</h2>
+        <div class="class-tab">Classe C</div>
+        
+        <p>Gli indirizzi IP di Classe C erano progettati per piccole reti con un numero limitato di dispositivi.</p>
+        
+        <h3>Struttura di un Indirizzo di Classe C</h3>
+        <p>Un indirizzo IP di classe C ha:</p>
+        <ul>
+            <li>I primi 3 bit fissi come "110"</li>
+            <li>I successivi 21 bit (per completare i primi tre ottetti) dedicati all'identificazione della rete</li>
+            <li>Gli ultimi 8 bit (l'ultimo ottetto) dedicati all'identificazione degli host</li>
+        </ul>
+        
+        <div class="table-container">
+            <table class="bit-table">
+                <tr>
+                    <td colspan="8" class="network">Primo Ottetto (Rete)</td>
+                    <td colspan="8" class="network">Secondo Ottetto (Rete)</td>
+                    <td colspan="8" class="network">Terzo Ottetto (Rete)</td>
+                    <td colspan="8" class="host">Quarto Ottetto (Host)</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="network">110</td>
+                    <td colspan="5" class="network">xxxxx</td>
+                    <td colspan="8" class="network">xxxxxxxx</td>
+                    <td colspan="8" class="network">xxxxxxxx</td>
+                    <td colspan="8" class="host">xxxxxxxx</td>
+                </tr>
+                <tr>
+                    <td colspan="8">255</td>
+                    <td colspan="8">255</td>
+                    <td colspan="8">255</td>
+                    <td colspan="8">0</td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="binary">11111111</td>
+                    <td colspan="8" class="binary">11111111</td>
+                    <td colspan="8" class="binary">11111111</td>
+                    <td colspan="8" class="binary">00000000</td>
+                </tr>
+                <tr>
+                    <td colspan="24">Parte di Rete</td>
+                    <td colspan="8">Parte di Host</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="calculation">
+            <h3>Calcolo del Numero di Reti Disponibili nella Classe C:</h3>
+            <p>Per la classe C, abbiamo 21 bit disponibili per identificare le reti (dopo i primi 3 bit fissi "110"):</p>
+            <div class="formula">
+                2<sup>21</sup> = 2.097.152 reti teoriche
+            </div>
+            <p>Nel sistema classful standard:</p>
+            <div class="formula">
+                2.097.152 reti effettivamente utilizzabili
+            </div>
+            
+            <h3>Calcolo del Numero di Host per Rete nella Classe C:</h3>
+            <p>Abbiamo 8 bit per gli host (l'ultimo ottetto):</p>
+            <div class="formula">
+                2<sup>8</sup> = 256 host teorici
+            </div>
+            <p>Dobbiamo sottrarre 2 indirizzi riservati in ogni rete:</p>
+            <div class="formula">
+                256 - 2 = 254 host utilizzabili per rete
+            </div>
+        </div>
+        
+        <div class="practical-example">
+            <h3>Esempio Pratico - Classe C</h3>
+            <p>Prendiamo l'indirizzo IP <strong>192.168.1.25</strong></p>
+            <p><strong>Identificazione della classe:</strong> Il primo ottetto è 192, che è tra 192 e 223, quindi è un indirizzo di Classe C</p>
+            <p><strong>Subnet mask:</strong> 255.255.255.0 (o /24 in notazione CIDR)</p>
+            <p><strong>Indirizzo di rete:</strong> 192.168.1.0</p>
+            <p><strong>Indirizzo di broadcast:</strong> 192.168.1.255</p>
+            <p><strong>Range di indirizzi utilizzabili:</strong> Da 192.168.1.1 a 192.168.1.254</p>
+        </div>
+        
+        <h2 id="classDE">Classi D ed E - Usi Speciali</h2>
+        
+        <h3>Classe D - Indirizzi Multicast</h3>
+        <p>Gli indirizzi di Classe D non sono utilizzati per normali comunicazioni host-to-host ma per il multicast, una forma di comunicazione uno-a-molti.</p>
+        <ul>
+            <li><strong>Intervallo:</strong> Da 224.0.0.0 a 239.255.255.255</li>
+            <li><strong>Primi bit:</strong> 1110</li>
+            <li><strong>Uso:</strong> Streaming video, videoconferenze, aggiornamenti di routing, DNS multicast</li>
+            <li><strong>Esempio:</strong> 224.0.0.5 è utilizzato dal protocollo OSPF per le comunicazioni tra router</li>
+        </ul>
+        
+        <h3>Classe E - Indirizzi Riservati per Ricerca</h3>
+        <p>Gli indirizzi di Classe E sono stati riservati per future applicazioni e ricerca sperimentale.</p>
+        <ul>
+            <li><strong>Intervallo:</strong> Da 240.0.0.0 a 255.255.255.255</li>
+            <li><strong>Primi bit:</strong> 1111</li>
+            <li><strong>Uso:</strong> Non utilizzati nelle normali reti Internet</li>
+            <li><strong>Nota:</strong> Molti sistemi operativi non permettono di configurare interfacce con indirizzi di Classe E</li>
+        </ul>
+        
+        <h2 id="limitations">Limiti del Sistema Classful</h2>
+        <p>Il sistema classful presentava diversi limiti che hanno portato alla sua sostituzione con il sistema CIDR:</p>
+        
+        <div class="explanation-box">
+            <h3>Problemi principali del sistema classful:</h3>
+            <ol>
+                <li><strong>Spreco di indirizzi IP:</strong> 
+                    <p>La rigida divisione in classi non permetteva un'allocazione efficiente. Ad esempio, se un'organizzazione necessitava di 300 indirizzi IP:</p>
+                    <ul>
+                        <li>Una rete di Classe C forniva solo 254 indirizzi (insufficiente)</li>
+                        <li>Una rete di Classe B forniva 65.534 indirizzi (eccessivo, con uno spreco di oltre 65.000 indirizzi)</li>
+                    </ul>
+                </li>
+                <li><strong>Crescita esplosiva delle tabelle di routing:</strong>
+                    <p>Con l'espansione di Internet, le tabelle di routing globali stavano crescendo a un ritmo insostenibile, minacciando le prestazioni dell'intera rete.</p>
+                </li>
+                <li><strong>Mancanza di flessibilità nella suddivisione delle reti:</strong>
+                    <p>Non era possibile suddividere efficacemente le reti in sottoreti di dimensioni variabili in base alle esigenze organizzative.</p>
+                </li>
+                <li><strong>Esaurimento rapido dello spazio di indirizzi IPv4:</strong>
+                    <p>L'allocazione inefficiente accelerava l'esaurimento dello spazio di indirizzi IPv4 disponibili.</p>
+                </li>
+            </ol>
+        </div>
+        
+        <h2 id="cidr">Dal Classful al CIDR</h2>
+        <p>Il sistema CIDR (Classless Inter-Domain Routing) ha sostituito il sistema classful negli anni '90, introducendo:</p>
+        
+        <div class="comparison">
+            <div class="comparison-item">
+                <h3>Sistema Classful</h3>
+                <ul>
+                    <li><strong>Subnet mask fisse</strong> determinate dalla classe:
+                        <ul>
+                            <li>Classe A: /8</li>
+                            <li>Classe B: /16</li>
+                            <li>Classe C: /24</li>
+                        </ul>
+                    </li>
+                    <li><strong>Solo tre dimensioni di rete</strong> principali disponibili</li>
+                    <li><strong>Impossibilità</strong> di aggregare rotte di routing</li>
+                    <li><strong>Spreco significativo</strong> di indirizzi IP</li>
+                </ul>
+            </div>
+            <div class="comparison-item">
+                <h3>Sistema CIDR</h3>
+                <ul>
+					<li>Subnet mask variabili (/8 fino a /30)</li>
+                    <li>Dimensioni di rete personalizzabili</li>
+                    <li>Utilizzo più efficiente dello spazio di indirizzi</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            <p><strong>Conclusione:</strong> Sebbene il sistema classful non sia più utilizzato attivamente nell'Internet moderno, comprendere i suoi principi è fondamentale per capire l'evoluzione del networking IP e i fondamenti su cui si basa l'attuale sistema CIDR. Molti concetti e termini derivati dal sistema classful sono ancora ampiamente utilizzati nella terminologia di rete.</p>
+        </div>
+    </div>
+</body>
+</html>
