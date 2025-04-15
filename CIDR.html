@@ -88,11 +88,21 @@
             color: white;
         }
         .fourth-octet {
+			background: linear-gradient(to right, #aa0055 50%, gray 50%);
+            color: white;
+        }            
+		.fourth-octet-network {
             background-color: #aa0055;
+            color: white;
+        }        
+		.fourth-octet-hosts {
+            background-color: gray;
             color: white;
         }
         .highlighted {
-            border: 2px solid #00aaff;
+            border: 3px solid #00aaff;
+			background-color: dark-gray;
+
         }
         .comparison {
             display: flex;
@@ -216,20 +226,20 @@
                     <td class="third-octet">1</td>
                     <td class="third-octet">1</td>
                     
-                    <td class="fourth-octet">1</td>
-                    <td class="fourth-octet">0</td>
-                    <td class="fourth-octet">0</td>
-                    <td class="fourth-octet highlighted">1</td>
-                    <td class="fourth-octet highlighted">0</td>
-                    <td class="fourth-octet highlighted">0</td>
-                    <td class="fourth-octet highlighted">0</td>
-                    <td class="fourth-octet highlighted">1</td>
+                    <td class="fourth-octet-network">1</td>
+                    <td class="fourth-octet-network">0</td>
+                    <td class="fourth-octet-network">0</td>
+                    <td class="fourth-octet-network">1</td>
+                    <td class="fourth-octet-hosts highlighted">0</td>
+                    <td class="fourth-octet-hosts highlighted">0</td>
+                    <td class="fourth-octet-hosts highlighted">0</td>
+                    <td class="fourth-octet-hosts highlighted">1</td>
                 </tr>
                 <tr>
                     <td colspan="8" class="first-octet">10</td>
                     <td colspan="8" class="second-octet">88</td>
                     <td colspan="8" class="third-octet">135</td>
-                    <td colspan="8" class="fourth-octet">145</td>
+                    <td colspan="8" class="fourth-octet"> <b class="fourth-octet-network">144</b> + <b class="fourth-octet-hosts">1</b> = <b>145</b></td>
                 </tr>
                 <tr>
                     <td colspan="28">Per una rete /28, i primi 28 bit (non evidenziati) rappresentano la rete, gli ultimi 4 bit (evidenziati) rappresentano l'host</td>
