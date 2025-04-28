@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Rete Avanzata e Tabelle di Routing con Diagrammi</title>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .tables {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        table {
+            width: 400px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #eee;
+        }
+        tr.highlight {
+            background-color: #222;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Schema di Rete Avanzato</h1>
+
+<p>La rete rappresenta una topologia complessa, con percorsi ridondanti e host collegati anche a router intermedi. Questo approccio migliora l'affidabilità e la velocità dell'instradamento. La scelta del next hop si basa sulla metrica più bassa: più è basso il valore, migliore è il percorso.</p>
+
+<h2>Diagramma della Rete</h2>
+<div class="mermaid">
+    graph LR
+        A1[Host A1\n192.168.1.2] --> R1
+        A2[Host A2\n192.168.1.3] --> R1
+        R1[Router 1\n192.168.1.1]
+        R1 --> R2[Router 2\n10.0.0.1]
+        R1 --> R3[Router 3\n10.0.1.1]
+        R2 --> R4[Router 4\n10.0.2.1]
+        R3 --> R4
+        R2 --> R5[Router 5\n172.16.0.1]
+        R4 --> R5
+        R5 --> B1[Host B1\n172.16.0.2]
+        R5 --> B2[Host B2\n172.16.0.3]
+        H1[Host H1\n10.0.0.2] --> R2
+        H2[Host H2\n10.0.1.2] --> R3
+        H3[Host H3\n10.0.2.2] --> R4
+</div>
+
+<h2>Tabelle di Routing</h2>
+<div class="tables">
+
+<table>
+    <caption>Router 1</caption>
+    <thead>
+        <tr>
+            <th>Destinazione</th>
+            <th>Next Hop</th>
+            <th>Interfaccia</th>
+            <th>Metrica<sup>*</sup></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>192.168.1.0/24</td><td>-</td><td>eth0</td><td>0</td></tr>
+        <tr class="highlight"><td>10.0.0.0/8</td><td>10.0.0.1</td><td>eth1</td><td>10</td></tr>
+        <tr><td>10.0.1.0/24</td><td>10.0.1.1</td><td>eth2</td><td>10</td></tr>
+        <tr><td>10.0.2.0/24</td><td>10.0.0.1</td><td>eth1</td><td>15</td></tr>
+        <tr><td>172.16.0.0/16</td><td>10.0.0.1</td><td>eth1</td><td>20</td></tr>
+    </tbody>
+</table>
+
+<table>
+    <caption>Router 2</caption>
+    <thead>
+        <tr>
+            <th>Destinazione</th>
+            <th>Next Hop</th>
+            <th>Interfaccia</th>
+            <th>Metrica<sup>*</sup></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>10.0.0.0/8</td><td>-</td><td>eth0</td><td>0</td></tr>
+        <tr><td>10.0.1.0/24</td><td>10.0.2.1</td><td>eth1</td><td>10</td></tr>
+        <tr><td>10.0.2.0/24</td><td>10.0.2.1</td><td>eth1</td><td>5</td></tr>
+        <tr class="highlight"><td>172.16.0.0/16</td><td>172.16.0.1</td><td>eth2</td><td>15</td></tr>
+        <tr><td>192.168.1.0/24</td><td>192.168.1.1</td><td>eth0</td><td>10</td></tr>
+    </tbody>
+</table>
+
+<table>
+    <caption>Router 3</caption>
+    <thead>
+        <tr>
+            <th>Destinazione</th>
+            <th>Next Hop</th>
+            <th>Interfaccia</th>
+            <th>Metrica<sup>*</sup></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>10.0.1.0/24</td><td>-</td><td>eth0</td><td>0</td></tr>
+        <tr><td>10.0.0.0/8</td><td>10.0.2.1</td><td>eth1</td><td>10</td></tr>
+        <tr><td>10.0.2.0/24</td><td>10.0.2.1</td><td>eth1</td><td>5</td></tr>
+        <tr><td>172.16.0.0/16</td><td>172.16.0.1</td><td>eth2</td><td>15</td></tr>
+        <tr><td>192.168.1.0/24</td><td>192.168.1.1</td><td>eth0</td><td>10</td></tr>
+    </tbody>
+</table>
+
+<table>
+    <caption>Router 4</caption>
+    <thead>
+        <tr>
+            <th>Destinazione</th>
+            <th>Next Hop</th>
+            <th>Interfaccia</th>
+            <th>Metrica<sup>*</sup></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>10.0.2.0/24</td><td>-</td><td>eth0</td><td>0</td></tr>
+        <tr><td>10.0.0.0/8</td><td>10.0.2.1</td><td>eth0</td><td>10</td></tr>
+        <tr><td>10.0.1.0/24</td><td>10.0.2.1</td><td>eth0</td><td>10</td></tr>
+        <tr><td>172.16.0.0/16</td><td>172.16.0.1</td><td>eth1</td><td>5</td></tr>
+        <tr><td>192.168.1.0/24</td><td>192.168.1.1</td><td>eth0</td><td>20</td></tr>
+    </tbody>
+</table>
+
+<table>
+    <caption>Router 5</caption>
+    <thead>
+        <tr>
+            <th>Destinazione</th>
+            <th>Next Hop</th>
+            <th>Interfaccia</th>
+            <th>Metrica<sup>*</sup></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>172.16.0.0/16</td><td>-</td><td>eth0</td><td>0</td></tr>
+        <tr><td>10.0.0.0/8</td><td>10.0.2.1</td><td>eth0</td><td>15</td></tr>
+        <tr><td>10.0.1.0/24</td><td>10.0.2.1</td><td>eth0</td><td>15</td></tr>
+        <tr><td>10.0.2.0/24</td><td>10.0.2.1</td><td>eth0</td><td>10</td></tr>
+        <tr class="highlight"><td>192.168.1.0/24</td><td>10.0.2.1</td><td>eth0</td><td>20</td></tr>
+    </tbody>
+</table>
+
+</div>
+
+<h3>Legenda Metrica<sup>*</sup></h3>
+<table>
+    <thead>
+        <tr>
+            <th>Valore</th>
+            <th>Significato</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>0</td><td>rete direttamente connessa</td></tr>
+        <tr><td>5</td><td>rete molto vicina</td></tr>
+        <tr><td>10</td><td>rete relativamente vicina</td></tr>
+        <tr><td>15</td><td>rete a distanza media</td></tr>
+        <tr><td>20</td><td>rete più lontana</td></tr>
+    </tbody>
+</table>
+
+<h2>Esempio di Percorso di un Pacchetto da Host A1 a Host B1</h2>
+<div class="mermaid">
+    sequenceDiagram
+        participant A1 as Host A1 (192.168.1.2)
+        participant R1 as Router 1
+        participant R2 as Router 2
+        participant R5 as Router 5
+        participant B1 as Host B1 (172.16.0.2)
+
+        A1->>R1: invia pacchetto destinato a 172.16.0.2
+        R1->>R2: inoltra a next hop 10.0.0.1
+        R2->>R5: inoltra a next hop 172.16.0.1
+        R5->>B1: consegna il pacchetto
+</div>
+
+</body>
+</html>
